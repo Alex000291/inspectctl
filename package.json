@@ -1,13 +1,21 @@
 {
   "name": "inspectctl",
   "version": "0.0.1",
-  "description": "MCP server skeleton (stdio). CDP tools live on the http branch.",
+  "description": "MCP server giving AI agents debugger-level visibility into Node.js processes",
   "type": "module",
   "scripts": {
-    "start": "node src/index.ts"
+    "start": "node src/index.ts",
+    "target": "node --inspect=9229 examples/target.cjs"
   },
+  "keywords": ["mcp", "debugger", "cdp", "ai", "inspect"],
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4"
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "chrome-remote-interface": "^0.33.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/chrome-remote-interface": "^0.31.14",
+    "@types/node": "^22.10.0"
   }
 }
