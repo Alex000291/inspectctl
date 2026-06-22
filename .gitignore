@@ -5,3 +5,4 @@ node_modules/
 .letta/
 *.heapsnapshot
 *.cpuprofile
+.claude/
