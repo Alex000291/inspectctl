@@ -5,7 +5,7 @@
  */
 import CDP from "chrome-remote-interface";
 import { randomUUID } from "node:crypto";
-import { connect, type TargetSelector } from "./client.js";
+import { connect, type TargetSelector } from "./client.ts";
 
 export interface BufferedEvent {
   ts: number;

@@ -16,15 +16,15 @@ import { randomUUID } from "node:crypto";
 import express from "express";
 import { z } from "zod";
 
-import { listTargets } from "./cdp/client.js";
-import { drainEvents, getSession, closeSession, listSessions } from "./cdp/session.js";
-import { getStack } from "./tools/stack.js";
-import { evalInContext } from "./tools/eval.js";
-import { heapSnapshot, heapDiff } from "./tools/heap.js";
-import { breakpoint, openBreakpointSession } from "./tools/breakpoint.js";
-import { profileCpu } from "./tools/profile.js";
-import { listAsync } from "./tools/async.js";
-import { tailLogs, openLogSession } from "./tools/logs.js";
+import { listTargets } from "./cdp/client.ts";
+import { drainEvents, getSession, closeSession, listSessions } from "./cdp/session.ts";
+import { getStack } from "./tools/stack.ts";
+import { evalInContext } from "./tools/eval.ts";
+import { heapSnapshot, heapDiff } from "./tools/heap.ts";
+import { breakpoint, openBreakpointSession } from "./tools/breakpoint.ts";
+import { profileCpu } from "./tools/profile.ts";
+import { listAsync } from "./tools/async.ts";
+import { tailLogs, openLogSession } from "./tools/logs.ts";
 
 // Common target selector shape — used by every tool.
 const targetSchema = {

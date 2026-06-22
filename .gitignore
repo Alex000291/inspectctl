@@ -1,7 +1,4 @@
 node_modules/
-dist/
-bundle/
-tools/
 *.log
 .DS_Store
 .env
