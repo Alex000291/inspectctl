@@ -20,36 +20,49 @@ export interface AsyncSnapshot {
 const PROBE = `
   (() => {
     const out = { resourcesInfo: [], handles: [], requests: [] };
-    try {
-      if (typeof process.getActiveResourcesInfo === 'function') {
-        out.resourcesInfo = process.getActiveResourcesInfo();
-      }
-    } catch (e) { out.resourcesInfoError = String(e); }
+    const isNode = typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.node;
 
-    const describe = (x) => {
-      if (!x) return { type: 'unknown' };
-      let type = (x.constructor && x.constructor.name) || typeof x;
-      let detail;
+    if (isNode) {
       try {
-        if (x._idleTimeout !== undefined) detail = 'timeout=' + x._idleTimeout;
-        else if (x.address && typeof x.address === 'function') {
-          try { const a = x.address(); detail = JSON.stringify(a); } catch (e) {}
+        if (typeof process.getActiveResourcesInfo === 'function') {
+          out.resourcesInfo = process.getActiveResourcesInfo();
         }
-      } catch (e) {}
-      return detail ? { type, detail } : { type };
-    };
+      } catch (e) { out.resourcesInfoError = String(e); }
 
-    try {
-      if (typeof process._getActiveHandles === 'function') {
-        out.handles = process._getActiveHandles().map(describe);
-      }
-    } catch (e) { out.handlesError = String(e); }
+      const describe = (x) => {
+        if (!x) return { type: 'unknown' };
+        let type = (x.constructor && x.constructor.name) || typeof x;
+        let detail;
+        try {
+          if (x._idleTimeout !== undefined) detail = 'timeout=' + x._idleTimeout;
+          else if (x.address && typeof x.address === 'function') {
+            try { const a = x.address(); detail = JSON.stringify(a); } catch (e) {}
+          }
+        } catch (e) {}
+        return detail ? { type, detail } : { type };
+      };
 
-    try {
-      if (typeof process._getActiveRequests === 'function') {
-        out.requests = process._getActiveRequests().map(describe);
-      }
-    } catch (e) { out.requestsError = String(e); }
+      try {
+        if (typeof process._getActiveHandles === 'function') {
+          out.handles = process._getActiveHandles().map(describe);
+        }
+      } catch (e) { out.handlesError = String(e); }
+
+      try {
+        if (typeof process._getActiveRequests === 'function') {
+          out.requests = process._getActiveRequests().map(describe);
+        }
+      } catch (e) { out.requestsError = String(e); }
+    } else {
+      // Browser target: use Performance API for resource entries
+      try {
+        const entries = performance.getEntriesByType('resource');
+        out.resourcesInfo = entries.map(e => e.initiatorType + ':' + e.name.slice(0, 120));
+      } catch (e) { out.resourcesInfoError = String(e); }
+      // No direct browser equivalent for Node handles/requests
+      out.handles = [];
+      out.requests = [];
+    }
 
     return out;
   })()

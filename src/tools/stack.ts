@@ -74,12 +74,12 @@ export async function getStack(sel: TargetSelector): Promise<GetStackResult> {
           .then(() => resolve())
           .catch(reject);
       };
-      (Debugger as any).once("paused", onPaused);
+      client.once("Debugger.paused", onPaused);
       Debugger.pause().catch(reject);
       // Safety timeout.
       setTimeout(() => {
         try {
-          (client as any).removeListener?.("Debugger.paused", onPaused);
+          client.removeListener("Debugger.paused", onPaused);
         } catch {}
         resolve();
       }, 1500);
