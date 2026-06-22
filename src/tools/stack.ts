@@ -24,6 +24,8 @@ export interface AsyncStackTrace {
 export interface GetStackResult {
   callFrames: StackFrame[];
   asyncStackTrace?: AsyncStackTrace;
+  idle?: boolean;
+  note?: string;
 }
 
 function mapFrames(frames: any[]): StackFrame[] {
@@ -66,6 +68,7 @@ export async function getStack(sel: TargetSelector): Promise<GetStackResult> {
     // user's actual stack). Pause + immediately resume.
     let frames: any[] = [];
     let asyncTrace: any = undefined;
+    let timedOut = false;
     await new Promise<void>((resolve, reject) => {
       const onPaused = (params: any) => {
         frames = params.callFrames || [];
@@ -81,14 +84,20 @@ export async function getStack(sel: TargetSelector): Promise<GetStackResult> {
         try {
           client.removeListener("Debugger.paused", onPaused);
         } catch {}
+        timedOut = true;
         resolve();
       }, 1500);
     });
 
     void stack;
-    return {
+    const result: GetStackResult = {
       callFrames: mapFrames(frames),
       asyncStackTrace: mapAsync(asyncTrace),
     };
+    if (timedOut && frames.length === 0) {
+      result.idle = true;
+      result.note = "target did not pause within 1500ms — it was likely idle";
+    }
+    return result;
   });
 }

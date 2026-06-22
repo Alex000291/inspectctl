@@ -54,12 +54,16 @@ const PROBE = `
         }
       } catch (e) { out.requestsError = String(e); }
     } else {
-      // Browser target: use Performance API for resource entries
+      // Browser target: no equivalent of Node handles/requests.
+      // performance.getEntriesByType returns completed entries; duration===0
+      // entries may still be in-flight (transfer not yet finished).
+      out._note = "browser target: handle/request enumeration not available; resourcesInfo shows potentially in-flight resource entries (duration=0)";
       try {
         const entries = performance.getEntriesByType('resource');
-        out.resourcesInfo = entries.map(e => e.initiatorType + ':' + e.name.slice(0, 120));
+        out.resourcesInfo = entries
+          .filter(e => e.duration === 0)
+          .map(e => e.initiatorType + ':' + e.name.slice(0, 120));
       } catch (e) { out.resourcesInfoError = String(e); }
-      // No direct browser equivalent for Node handles/requests
       out.handles = [];
       out.requests = [];
     }
