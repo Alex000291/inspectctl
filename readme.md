@@ -40,7 +40,7 @@ npm run target           # spawn demo target on --inspect=9229
 ## MCP client wiring (Claude Code)
 
 ```sh
-claude mcp add -s user inspectctl -- node D:/works/web3/inspectctl/src/index.ts
+claude mcp add -s user inspectctl -- node your_path/inspectctl/src/index.ts
 ```
 
 Then in any Claude Code conversation:
